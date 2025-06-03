@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>An Interactive Guide to AAC for Parents</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Visualization & Content Choices: 
+        - Report Info: AAC App pricing. Goal: Compare costs. Viz: Horizontal Bar Chart (Chart.js). Interaction: Hover tooltips. Justification: Visual cost comparison. Library/Method: Chart.js.
+        - Report Info: Key AAC Terminology. Goal: Explain terms simply. Viz: Interactive card grid. Interaction: Click to flip. Justification: Engaging learning of concepts. Library/Method: HTML/CSS/JS.
+        - Report Info: App comparisons. Goal: Explore alternatives. Viz: Filterable card grid. Interaction: Checkbox filters; click card for modal. Justification: User-centric tool for app discovery. Library/Method: HTML/CSS/JS.
+        - Report Info: Getting Started process. Goal: Show clear path. Viz: Styled HTML/CSS step-by-step diagram. Justification: Clarifies action sequence. Library/Method: HTML/Tailwind CSS.
+        - Report Info: Proloquo vs Proloquo2Go distinction. Goal: Clarify common point of confusion. Viz: Textual explanation in dedicated section. Justification: Directly addresses potential user query. Library/Method: HTML/Tailwind CSS.
+        - Report Info: Why Apple? Goal: Explain platform prevalence. Viz: Informational cards. Justification: Answers user question. Library/Method: HTML/Tailwind CSS.
+    -->
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .active-nav { color: #059669; border-bottom-color: #059669; font-weight: 600; }
+        .nav-link { border-bottom: 2px solid transparent; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 450px; max-height: 80vh; }
+        @media (max-width: 768px) { .chart-container { height: 500px; } }
+
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .card { 
+            transform-style: preserve-3d;
+        }
+        .card-front, .card-back {
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+        .card-front {
+            z-index: 10; 
+        }
+        .card-back {
+            transform: rotateY(180deg); 
+            z-index: 5;
+        }
+        .is-flipped .card-front { 
+            transform: rotateY(180deg);
+            z-index: 5;
+        }
+        .is-flipped .card-back { 
+            transform: rotateY(0deg);
+            z-index: 10;
+        }
+
+        .step-connector { content: ''; position: absolute; left: 50%; top: 2rem; bottom: -2rem; border-left: 2px dashed #9ca3af; transform: translateX(-1px); }
+        .step-item:last-child .step-connector { display: none; }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <div id="app" class="antialiased">
+        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 shadow-sm">
+            <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <span class="text-xl font-bold text-emerald-700">AAC Parent Guide</span>
+                    </div>
+                    <div class="hidden md:block">
+                        <div id="nav-links" class="ml-10 flex items-baseline space-x-4">
+                            <a href="#home" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600 hover:text-emerald-600">Home</a>
+                            <a href="#basics" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600 hover:text-emerald-600">AAC Basics</a>
+                            <a href="#chooser" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600 hover:text-emerald-600">Choosing a Tool</a>
+                            <a href="#success" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600 hover:text-emerald-600">How to Succeed</a>
+                            <a href="#proloquo-diff" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600 hover:text-emerald-600">Proloquo vs P2G</a>
+                            <a href="#why-apple" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600 hover:text-emerald-600">Why Apple?</a>
+                            <a href="#resources" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600 hover:text-emerald-600">Resources</a>
+                        </div>
+                    </div>
+                    <div class="md:hidden">
+                        <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-stone-500 hover:text-white hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-emerald-600 focus:ring-white">
+                            <span class="sr-only">Open main menu</span>
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                        </button>
+                    </div>
+                </div>
+                <div id="mobile-menu" class="hidden md:hidden pb-3">
+                    <a href="#home" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-stone-600 hover:bg-emerald-50">Home</a>
+                    <a href="#basics" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-stone-600 hover:bg-emerald-50">AAC Basics</a>
+                    <a href="#chooser" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-stone-600 hover:bg-emerald-50">Choosing a Tool</a>
+                    <a href="#success" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-stone-600 hover:bg-emerald-50">How to Succeed</a>
+                    <a href="#proloquo-diff" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-stone-600 hover:bg-emerald-50">Proloquo vs P2G</a>
+                    <a href="#why-apple" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-stone-600 hover:bg-emerald-50">Why Apple?</a>
+                    <a href="#resources" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-stone-600 hover:bg-emerald-50">Resources</a>
+                </div>
+            </nav>
+        </header>
+
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+            <section id="home" class="content-section">
+                <div class="text-center bg-white p-8 rounded-2xl shadow-lg border border-stone-200">
+                    <h1 class="text-4xl md:text-5xl font-bold text-emerald-700">Unlocking Your Child's Voice</h1>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-stone-600">Welcome. This guide is designed to help you, as a parent of a young autistic child, navigate the world of Augmentative and Alternative Communication (AAC). The goal is to demystify the options and empower you with clear, practical information to support your son's communication journey.</p>
+                </div>
+
+                <div class="mt-12 grid md:grid-cols-2 gap-8 items-start">
+                     <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
+                        <h3 class="text-2xl font-semibold text-stone-800 flex items-center">
+                            <span class="text-3xl mr-3">💬</span> What is AAC?
+                        </h3>
+                        <p class="mt-3 text-stone-600">AAC includes all the ways someone communicates besides talking. It's a set of tools and strategies to help your son express his thoughts, needs, and feelings when speech is difficult. This can range from simple gestures and picture boards to high-tech apps on a tablet. The goal is to give your son a reliable way to communicate in every situation.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
+                        <h3 class="text-2xl font-semibold text-red-600 flex items-center">
+                            <span class="text-3xl mr-3">💡</span> Myth vs. Fact
+                        </h3>
+                         <p class="mt-3 text-stone-600"><strong class="text-red-600">Myth:</strong> Using AAC will stop my child from learning to speak.
+                         <br>
+                         <strong class="text-emerald-700">Fact:</strong> This is a common fear, but it's unfounded. Research and clinical experience consistently show that AAC does <strong class="underline">not</strong> stop speech development. In many cases, it actually helps! By reducing frustration and providing a consistent language model, AAC can be a stepping stone *towards* speech for children who have the potential to speak.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="basics" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-emerald-700">AAC Basics: Key Terms to Know</h2>
+                    <p class="mt-3 max-w-3xl mx-auto text-lg text-stone-600">This world comes with its own vocabulary. Here are the key terms broken down into simple, interactive cards. Click on any card to learn more.</p>
+                </div>
+                <div id="terms-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                </div>
+            </section>
+
+            <section id="chooser" class="content-section">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-emerald-700">Choosing a Tool: An Interactive Comparison</h2>
+                    <p class="mt-3 max-w-3xl mx-auto text-lg text-stone-600">Your research likely started with Proloquo, but many alternatives exist. Use the filters below to explore and compare some of the most common commercial and open-source AAC apps. This section helps you see what's out there and find options that might be a good fit for your son and your family.</p>
+                </div>
+                
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-lg border border-stone-200 mb-8 sticky top-16 z-30">
+                    <h3 class="font-semibold text-stone-700 text-lg mb-4 text-center">Filter AAC Tools By...</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6" id="filters">
+                        <div>
+                            <span class="font-medium text-stone-600">Platform</span>
+                            <div class="mt-2 space-y-2">
+                                <label class="flex items-center"><input type="checkbox" data-filter="platform" value="iOS" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"> <span class="ml-2 text-stone-700">iOS (iPad/iPhone)</span></label>
+                                <label class="flex items-center"><input type="checkbox" data-filter="platform" value="Android" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"> <span class="ml-2 text-stone-700">Android</span></label>
+                                <label class="flex items-center"><input type="checkbox" data-filter="platform" value="Web" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"> <span class="ml-2 text-stone-700">Web / Cross-Platform</span></label>
+                            </div>
+                        </div>
+                         <div>
+                            <span class="font-medium text-stone-600">Pricing Model</span>
+                            <div class="mt-2 space-y-2">
+                                <label class="flex items-center"><input type="checkbox" data-filter="price" value="One-time" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"> <span class="ml-2 text-stone-700">One-time Purchase</span></label>
+                                <label class="flex items-center"><input type="checkbox" data-filter="price" value="Subscription" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"> <span class="ml-2 text-stone-700">Subscription</span></label>
+                                <label class="flex items-center"><input type="checkbox" data-filter="price" value="Free" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"> <span class="ml-2 text-stone-700">Free / Open-Source</span></label>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="font-medium text-stone-600">Key Feature</span>
+                            <div class="mt-2 space-y-2">
+                                <label class="flex items-center"><input type="checkbox" data-filter="feature" value="Motor Planning" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"> <span class="ml-2 text-stone-700">Strong Motor Planning</span></label>
+                                <label class="flex items-center"><input type="checkbox" data-filter="feature" value="Customizable" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"> <span class="ml-2 text-stone-700">Highly Customizable</span></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="apps-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                </div>
+                
+                <div class="mt-16 bg-white p-6 sm:p-8 rounded-2xl shadow-lg border border-stone-200">
+                    <h3 class="text-2xl font-bold text-center text-stone-800 mb-6">Approximate One-Time Costs: A Visual Comparison</h3>
+                    <p class="text-center text-stone-600 max-w-3xl mx-auto mb-8">This chart shows the typical one-time purchase price for some of the most popular commercial apps. Note that prices can change and some apps (like TD Snap) are moving to a subscription model, which is a different long-term cost. This is for general comparison only.</p>
+                    <div class="chart-container">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="success" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-emerald-700">How to Succeed with AAC</h2>
+                    <p class="mt-3 max-w-3xl mx-auto text-lg text-stone-600">Choosing a tool is just the first step. Success comes from how you and your support team integrate it into your son's daily life. This section outlines the key steps in the journey and the most powerful strategies you can use at home.</p>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-bold text-stone-800 mb-6 text-center">Your Journey: Getting Started with AAC</h3>
+                    <div class="relative max-w-2xl mx-auto">
+                        <div class="step-item relative flex items-start mb-8">
+                           <div class="step-connector"></div>
+                           <div class="flex-shrink-0 w-16 h-16 rounded-full bg-emerald-600 text-white flex items-center justify-center text-2xl font-bold z-10">1</div>
+                           <div class="ml-6 bg-white p-5 rounded-xl shadow-md border border-stone-200 w-full">
+                               <h4 class="font-bold text-lg text-stone-800">Consult a Speech-Language Pathologist (SLP)</h4>
+                               <p class="text-stone-600 mt-1">This is the most critical first step. Find an SLP with specific expertise in AAC for young autistic children. They will be your guide through this entire process.</p>
+                           </div>
+                        </div>
+                        <div class="step-item relative flex items-start mb-8">
+                           <div class="step-connector"></div>
+                           <div class="flex-shrink-0 w-16 h-16 rounded-full bg-emerald-600 text-white flex items-center justify-center text-2xl font-bold z-10">2</div>
+                           <div class="ml-6 bg-white p-5 rounded-xl shadow-md border border-stone-200 w-full">
+                               <h4 class="font-bold text-lg text-stone-800">Comprehensive Assessment</h4>
+                               <p class="text-stone-600 mt-1">The SLP will evaluate your son's unique strengths, challenges, and communication needs to determine the best type of AAC system to start with. This is called "feature matching."</p>
+                           </div>
+                        </div>
+                        <div class="step-item relative flex items-start mb-8">
+                           <div class="step-connector"></div>
+                           <div class="flex-shrink-0 w-16 h-16 rounded-full bg-emerald-600 text-white flex items-center justify-center text-2xl font-bold z-10">3</div>
+                           <div class="ml-6 bg-white p-5 rounded-xl shadow-md border border-stone-200 w-full">
+                               <h4 class="font-bold text-lg text-stone-800">Trial Different Systems</h4>
+                               <p class="text-stone-600 mt-1">Don't commit to a system without trying it first! The SLP will help you trial different apps or devices to see what "clicks" for your son and what feels manageable for your family.</p>
+                           </div>
+                        </div>
+                         <div class="step-item relative flex items-start">
+                           <div class="flex-shrink-0 w-16 h-16 rounded-full bg-emerald-600 text-white flex items-center justify-center text-2xl font-bold z-10">4</div>
+                           <div class="ml-6 bg-white p-5 rounded-xl shadow-md border border-stone-200 w-full">
+                               <h4 class="font-bold text-lg text-stone-800">Family Training & Implementation</h4>
+                               <p class="text-stone-600 mt-1">Once a system is chosen, the real work begins. The SLP will train you and your family on how to use it, model language, and create communication opportunities at home. Your involvement is key!</p>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-16">
+                     <h3 class="text-2xl font-bold text-stone-800 mb-6 text-center">Your Most Powerful Strategy: Modeling</h3>
+                     <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg border border-stone-200">
+                         <p class="text-lg text-stone-600">If you remember one thing, let it be this: **you need to use your son's AAC system when you talk to him.** This is called <strong class="text-emerald-700">modeling</strong> or Aided Language Input.</p>
+                         <br>
+                         <p class="text-stone-600">Just like children learn to speak by hearing words used around them constantly, your son will learn his AAC system by seeing you use it. When you say, "Do you want to <strong class="text-emerald-700">play</strong>?", you should also press the 'PLAY' button on his device. This shows him how the symbols connect to spoken words and real actions. It's the single most important thing you can do to help him learn and feel motivated to communicate.</p>
+                     </div>
+                </div>
+            </section>
+
+            <section id="proloquo-diff" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-emerald-700">Proloquo vs. Proloquo2Go: What's the Difference?</h2>
+                    <p class="mt-3 max-w-3xl mx-auto text-lg text-stone-600">You might encounter both "Proloquo" and "Proloquo2Go" in your research. It's helpful to understand they refer to different products from the same company, AssistiveWare, designed for different platforms and eras.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
+                        <h3 class="text-2xl font-semibold text-stone-800 mb-3">Proloquo (Legacy Software)</h3>
+                        <p class="text-stone-600"><strong>Platform:</strong> Primarily Mac OS X (Apple desktop and laptop computers).</p>
+                        <p class="mt-2 text-stone-600"><strong>History:</strong> Proloquo was one of the earlier AAC software solutions developed by AssistiveWare. It was designed to provide text-to-speech capabilities and symbol-based communication on Apple computers.</p>
+                        <p class="mt-2 text-stone-600"><strong>Status:</strong> Proloquo for Mac OS X is generally considered legacy software. While it was innovative for its time, the focus of development and the broader AAC community has largely shifted to mobile platforms.</p>
+                        <p class="mt-2 text-stone-600"><strong>Relevance Today:</strong> You are less likely to encounter "Proloquo" as a current recommendation for a young child starting with AAC. Most modern AAC interventions leverage the portability and interactivity of tablets.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
+                        <h3 class="text-2xl font-semibold text-emerald-700 mb-3">Proloquo2Go (Current App)</h3>
+                        <p class="text-emerald-600"><strong>Platform:</strong> iOS (iPad, iPhone, iPod touch).</p>
+                        <p class="mt-2 text-emerald-600"><strong>History:</strong> With the rise of the iPhone and iPad, AssistiveWare developed Proloquo2Go ("P2G") specifically for these mobile devices. It quickly became one ofthe most well-known and widely adopted AAC apps.</p>
+                        <p class="mt-2 text-emerald-600"><strong>Status:</strong> Proloquo2Go is a current, actively developed, and widely used AAC application. It receives regular updates with new features, vocabulary, and voices.</p>
+                        <p class="mt-2 text-emerald-600"><strong>Relevance Today:</strong> When people discuss "Proloquo" in the context of modern AAC for children, they are almost certainly referring to **Proloquo2Go**. This is the app you would consider for your son on an iPad.</p>
+                    </div>
+                </div>
+                <div class="mt-8 bg-sky-50 p-6 rounded-2xl shadow-md border border-sky-200">
+                    <h3 class="text-xl font-semibold text-sky-700 text-center">In Simple Terms:</h3>
+                    <p class="mt-3 text-sky-600 text-center max-w-2xl mx-auto">Think of **Proloquo** as the older computer program, and **Proloquo2Go (P2G)** as the modern app for iPads and iPhones that your son would use. If an SLP or another parent mentions "Proloquo" today in the context of an AAC app for a child, they almost always mean Proloquo2Go.</p>
+                </div>
+            </section>
+            
+            <section id="why-apple" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-emerald-700">Why are AAC Apps Mostly for Apple?</h2>
+                    <p class="mt-3 max-w-3xl mx-auto text-lg text-stone-600">You're right to notice that many of the most popular AAC apps are for iPads. While this is changing, there are several historical and technical reasons for this trend. Understanding them can help clarify why you see so many recommendations for iOS devices.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
+                        <h3 class="text-xl font-semibold text-stone-800 flex items-center"><span class="text-3xl mr-3">🏆</span>Early Lead</h3>
+                        <p class="mt-2 text-stone-600">When the iPad was launched in 2010, it was a game-changer. Developers rushed to create AAC apps for it, establishing a strong ecosystem early on. This gave iOS a significant head start.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
+                        <h3 class="text-xl font-semibold text-stone-800 flex items-center"><span class="text-3xl mr-3">🛡️</span>Platform Stability</h3>
+                        <p class="mt-2 text-stone-600">Apple's hardware and software are tightly integrated, creating a very stable and consistent environment. For developers of complex apps like AAC, this makes building and maintaining them more straightforward.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
+                        <h3 class="text-xl font-semibold text-stone-800 flex items-center"><span class="text-3xl mr-3">♿</span>Built-in Accessibility</h3>
+                        <p class="mt-2 text-stone-600">Apple has long prioritized powerful, built-in accessibility features. A crucial one is "Guided Access," which locks the iPad into a single app. This was vital for keeping a child focused on their communication app.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
+                        <h3 class="text-xl font-semibold text-stone-800 flex items-center"><span class="text-3xl mr-3">😎</span>Social Acceptance</h3>
+                        <p class="mt-2 text-stone-600">Using a mainstream device like an iPad often carries less stigma than a specialized "medical" device. It's the "cool" device that other kids have, which can help a child feel more included.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
+                        <h3 class="text-xl font-semibold text-stone-800 flex items-center"><span class="text-3xl mr-3">📈</span>Is it Changing?</h3>
+                        <p class="mt-2 text-stone-600">Yes! The Android platform has made huge strides in accessibility, and more quality AAC apps are becoming available for it. However, the widest selection of the most established apps is still found on iOS due to its long history in the field.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
+                        <h3 class="text-xl font-semibold text-stone-800 flex items-center"><span class="text-3xl mr-3">➡️</span>What This Means For You</h3>
+                        <p class="mt-2 text-stone-600">While you'll encounter many iPad recommendations, it's worth discussing Android options with your SLP, especially if budget is a concern or your family prefers that platform.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="resources" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-emerald-700">Helpful Resources & Next Steps</h2>
+                    <p class="mt-3 max-w-3xl mx-auto text-lg text-stone-600">You are not alone on this journey. Many organizations and communities exist to provide support, information, and funding assistance. Here are some key resources to explore.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
+                        <h3 class="text-xl font-semibold text-stone-800">Professional Organizations</h3>
+                        <ul class="mt-3 space-y-3">
+                            <li><a href="https://www.asha.org/" target="_blank" class="text-emerald-600 hover:underline font-medium">ASHA (American Speech-Language-Hearing Association)</a>: Find qualified professionals and get reliable information on communication disorders.</li>
+                            <li><a href="https://www.isaac-online.org/" target="_blank" class="text-emerald-600 hover:underline font-medium">ISAAC (International Society for AAC)</a>: Global organization dedicated to promoting communication for people with complex needs.</li>
+                        </ul>
+                    </div>
+                     <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
+                        <h3 class="text-xl font-semibold text-stone-800">Autism & Community Support</h3>
+                        <ul class="mt-3 space-y-3">
+                           <li><a href="https://www.autismspeaks.org/" target="_blank" class="text-emerald-600 hover:underline font-medium">Autism Speaks</a>: Provides toolkits and resources on autism, including assistive technology.</li>
+                           <li><a href="https://praacticalaac.org/" target="_blank" class="text-emerald-600 hover:underline font-medium">PrAACtical AAC</a>: A highly respected blog with practical tips and resources from AAC experts.</li>
+                        </ul>
+                    </div>
+                     <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
+                        <h3 class="text-xl font-semibold text-stone-800">Device & Funding Support</h3>
+                        <ul class="mt-3 space-y-3">
+                           <li><a href="https://www.at-center.com/location" target="_blank" class="text-emerald-600 hover:underline font-medium">State Assistive Technology (AT) Programs (USA)</a>: Find your state's program for device loans, demos, and funding info.</li>
+                           <li><span class="font-medium text-stone-700">AAC Vendor Websites</span>: Companies like Tobii Dynavox, PRC-Saltillo, and AssistiveWare have extensive support materials and community forums.</li>
+                        </ul>
+                    </div>
+                     <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
+                        <h3 class="text-xl font-semibold text-stone-800">Parent & Online Groups</h3>
+                        <p class="mt-3 text-stone-600">Search on social media platforms like Facebook for groups dedicated to specific AAC apps (e.g., "LAMP Words for Life Parents") or general AAC parent support groups. Connecting with other parents can provide invaluable advice and emotional support.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden items-center justify-center p-4">
+        <div id="modal-content" class="bg-stone-50 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 relative">
+            <button id="modal-close" class="absolute top-4 right-4 text-stone-500 hover:text-stone-800">&times;</button>
+            </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const appData = [
+                { id: 'p2g', name: 'Proloquo2Go', vendor: 'AssistiveWare', priceCategory: 'One-time', price: 249.99, platforms: ['iOS'], features: ['Customizable'], summary: 'A comprehensive, highly customizable symbol-based app.', pros: ['Extensive vocabulary and high-quality voices.', 'Progressive Language feature grows with the user.', 'Highly customizable grid layouts and buttons.'], cons: ['High one-time cost.', 'Complexity can be overwhelming initially.', 'Ease of moving buttons can disrupt motor planning if not managed carefully.'] },
+                { id: 'lamp', name: 'LAMP Words for Life', vendor: 'PRC-Saltillo', priceCategory: 'One-time', price: 299.99, platforms: ['iOS'], features: ['Motor Planning'], summary: 'Focuses on unique and consistent motor plans for each word.', pros: ['Excellent for users who thrive on routine and predictability.', 'Consistent motor patterns reduce cognitive load.', 'Vocabulary Builder helps manage complexity for beginners.'], cons: ['High one-time cost.', 'Abstract symbols require direct teaching.', 'Steep learning curve for parents and therapists; may require specialized training.'] },
+                { id: 'touchchat', name: 'TouchChat HD w/ WordPower', vendor: 'PRC-Saltillo', priceCategory: 'One-time', price: 299.99, platforms: ['iOS'], features: ['Customizable'], summary: 'Intuitive, word-based vocabularies for sentence building.', pros: ['WordPower vocabularies are well-structured and intuitive for many.', 'Highly customizable.', 'Offers various vocabulary levels for different abilities.'], cons: ['High one-time cost.', 'Vocabulary layout can change when moving between levels, disrupting motor plans.', 'Some reported minor bugs.'] },
+                { id: 'tdsnap', name: 'TD Snap (Core First)', vendor: 'Tobii Dynavox', priceCategory: 'Subscription', price: 9.99, platforms: ['iOS', 'Web'], features: ['Customizable'], summary: 'Systematic, core-word focused app with integrated visual supports.', pros: ['Strong, systematic approach to language learning.', 'Easy-to-use editing tools.', 'Integrated supports like visual schedules are very helpful.'], cons: ['Subscription model can be costly long-term.', 'Some find accessing fringe vocabulary can take many clicks.', 'Updates have reportedly pushed users to the subscription model.'] },
+                { id: 'avaz', name: 'Avaz AAC', vendor: 'Avaz, Inc.', priceCategory: 'One-time', price: 200.00, platforms: ['iOS', 'Android'], features: ['Customizable'], summary: 'Affordable, user-friendly app with graded vocabulary levels.', pros: ['Relatively affordable one-time cost.', 'Simple, color-coded interface is good for beginners.', 'Remote modeling feature for teletherapy.'], cons: ['Motor planning is less of a focus.', 'Customer support is based internationally.'] },
+                { id: 'coughdrop', name: 'CoughDrop', vendor: 'CoughDrop, Inc.', priceCategory: 'Subscription', price: 9.00, platforms: ['iOS', 'Android', 'Web'], features: ['Motor Planning', 'Customizable'], summary: 'Cross-platform app with strong team collaboration features.', pros: ['Works on almost any device.', 'Good motor planning support (words don\'t move).', 'Excellent for collaboration with free accounts for supporters.'], cons: ['Subscription cost.', 'Interface can feel a bit "clunky" to some.', 'Premium voices are platform-dependent.'] },
+                { id: 'cboard', name: 'Cboard', vendor: 'Community-driven', priceCategory: 'Free', price: 0, platforms: ['Android', 'Web'], features: ['Customizable'], summary: 'Free, web-based, and open-source AAC with good customization.', pros: ['Completely free to use.', 'Works on any device with a modern web browser.', 'Uses extensive open symbol libraries.'], cons: ['Support is community-based, not from a dedicated company.', 'May lack the polish and advanced features of top commercial apps.'] },
+                { id: 'leeloo', name: 'Leeloo AAC', vendor: 'Assistive Cards', priceCategory: 'Free', price: 0, platforms: ['iOS', 'Android'], features: ['Customizable'], summary: 'Freemium open-source app targeting non-verbal children.', pros: ['Free for basic use.', 'Designed with autism-friendly principles.', 'Open-source and available on both major mobile platforms.'], cons: ['Premium features require a subscription.', 'A smaller project compared to major commercial apps.', 'Support is likely limited.'] },
+            ];
+
+            const terminologyData = [
+                { term: 'Core Vocabulary', definition: 'A small set of high-frequency words (go, more, want, I, you) that make up ~80% of what we say. They are versatile and can be used in any situation.', why: 'Teaching these words gives your son the flexible building blocks to create thousands of unique messages.' },
+                { term: 'Fringe Vocabulary', definition: 'Nouns and other specific words for personal interests (dinosaur, train, cookie, mommy).', why: 'This vocabulary makes communication personal and highly motivating for your son.' },
+                { term: 'Modeling (Aided Input)', definition: 'The #1 strategy! When you talk to your child, you also point to the symbols on their AAC system at the same time.', why: 'Your son learns his "language" by seeing you and others use it in real conversations.' },
+                { term: 'Low-Tech vs. High-Tech', definition: 'Low-tech are non-electronic aids like picture boards. High-tech are electronic devices that speak, like an iPad with an app.', why: 'A mix is often best. Low-tech is great for backups or in the bath, while high-tech offers a huge vocabulary.' },
+                { term: 'PECS', definition: 'Picture Exchange Communication System. A specific low-tech method where a child learns to hand a picture of an item to a partner to get it.', why: 'It\'s a structured, evidence-based way to teach the power of initiating communication.' },
+                { term: 'Motor Planning', definition: 'The idea that a word should always be in the same place on the device, so the child learns a consistent muscle movement to say it, like typing on a keyboard.', why: 'This makes communication faster and more automatic, reducing the mental effort needed to find words.' },
+                { term: 'Unaided vs. Aided AAC', definition: 'Unaided AAC uses only the body (gestures, expressions, signs). Aided AAC uses an external tool (picture board, device).', why: 'All forms of communication are valued! AAC builds on your son\'s existing unaided communication skills.' },
+                { term: 'SGD', definition: 'Speech-Generating Device. The technical term for any high-tech AAC system that produces a voice output.', why: 'An iPad with an AAC app effectively becomes a powerful, flexible SGD for your son.' }
+            ];
+
+            const navLinksContainer = document.getElementById('nav-links');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sections = document.querySelectorAll('.content-section');
+            const appsGrid = document.getElementById('apps-grid');
+            const filters = document.getElementById('filters');
+            const costChartCanvas = document.getElementById('costChart');
+            const termsGrid = document.getElementById('terms-grid');
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+            const modalClose = document.getElementById('modal-close');
+
+            const setupNavigation = () => {
+                const allNavLinks = document.querySelectorAll('.nav-link');
+
+                const handleNavClick = (e) => {
+                    e.preventDefault();
+                    const targetId = e.target.hash.substring(1);
+                    updateActiveContent(targetId);
+                    if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+
+                allNavLinks.forEach(link => link.addEventListener('click', handleNavClick));
+
+                if (mobileMenuButton && mobileMenu) {
+                    mobileMenuButton.addEventListener('click', () => {
+                        mobileMenu.classList.toggle('hidden');
+                    });
+                }
+            };
+
+            const updateActiveContent = (targetId) => {
+                sections.forEach(section => {
+                    section.classList.toggle('active', section.id === targetId);
+                });
+                
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.toggle('active-nav', link.hash === '#' + targetId);
+                });
+
+                if (targetId === 'chooser' && costChartCanvas && !costChartCanvas.chart) {
+                    createCostChart();
+                }
+            };
+            
+            const renderTerminology = () => {
+                if (!termsGrid) return;
+                termsGrid.innerHTML = terminologyData.map(item => `
+                    <div class="perspective-1000 h-56">
+                        <div class="relative card h-full w-full cursor-pointer" onclick="this.parentNode.classList.toggle('is-flipped')">
+                            <div class="card-front absolute inset-0 bg-white p-5 rounded-2xl shadow-lg border border-stone-200 flex flex-col justify-center items-center text-center">
+                                <h4 class="text-xl font-semibold text-emerald-700">${item.term}</h4>
+                                <span class="text-xs text-stone-400 mt-2">Click to learn more</span>
+                            </div>
+                            <div class="card-back absolute inset-0 bg-emerald-600 text-white p-5 rounded-2xl shadow-xl flex flex-col justify-center">
+                                <p class="text-sm"><strong>What it is:</strong> ${item.definition}</p>
+                                <p class="text-sm mt-2"><strong>Why it matters:</strong> ${item.why}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            };
+
+            const renderApps = (data) => {
+                if (!appsGrid) return;
+                if (data.length === 0) {
+                     appsGrid.innerHTML = `<div class="col-span-full text-center py-12 bg-white rounded-lg shadow-md"><p class="text-stone-600">No tools match your selected filters. Please try adjusting your selections.</p></div>`;
+                     return;
+                }
+                appsGrid.innerHTML = data.map(app => `
+                    <div class="bg-white rounded-2xl shadow-md border border-stone-200 p-5 flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                        <h4 class="text-lg font-bold text-stone-800">${app.name}</h4>
+                        <p class="text-sm text-stone-500">${app.vendor}</p>
+                        <p class="mt-2 text-sm text-stone-600 flex-grow">${app.summary}</p>
+                        <div class="mt-4 text-xs font-medium space-x-2">
+                           ${app.platforms.map(p => `<span class="inline-block bg-stone-200 text-stone-700 rounded-full px-2 py-1">${p}</span>`).join('')}
+                           <span class="inline-block bg-emerald-100 text-emerald-800 rounded-full px-2 py-1">${app.priceCategory === 'Free' ? 'Free' : app.priceCategory}</span>
+                        </div>
+                        <button class="mt-4 w-full bg-emerald-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-emerald-700 transition-colors" data-id="${app.id}">View Details</button>
+                    </div>
+                `).join('');
+            };
+            
+            const handleFilterChange = () => {
+                const selectedFilters = {
+                    platform: [],
+                    price: [],
+                    feature: []
+                };
+                if (!filters) return;
+                filters.querySelectorAll('input[type="checkbox"]:checked').forEach(input => {
+                    selectedFilters[input.dataset.filter].push(input.value);
+                });
+
+                const filteredData = appData.filter(app => {
+                    const platformMatch = selectedFilters.platform.length === 0 || app.platforms.some(p => selectedFilters.platform.includes(p));
+                    const priceMatch = selectedFilters.price.length === 0 || selectedFilters.price.includes(app.priceCategory);
+                    const featureMatch = selectedFilters.feature.length === 0 || app.features.some(f => selectedFilters.feature.includes(f));
+                    return platformMatch && priceMatch && featureMatch;
+                });
+                renderApps(filteredData);
+            };
+            
+            const createCostChart = () => {
+                if (!costChartCanvas) return;
+                const commercialApps = appData.filter(app => app.priceCategory === 'One-time' && app.price > 0);
+                
+                new Chart(costChartCanvas, {
+                    type: 'bar',
+                    data: {
+                        labels: commercialApps.map(app => app.name),
+                        datasets: [{
+                            label: 'Approximate One-Time Cost (USD)',
+                            data: commercialApps.map(app => app.price),
+                            backgroundColor: 'rgba(5, 150, 105, 0.7)',
+                            borderColor: 'rgba(4, 120, 87, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return ` Approx. $${context.raw.toFixed(2)}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: { display: true, text: 'Cost (USD)', font: { size: 14 } },
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + value;
+                                    }
+                                }
+                            },
+                            y: {
+                                ticks: { font: { size: 14 } }
+                            }
+                        }
+                    }
+                });
+                costChartCanvas.chart = true; 
+            };
+            
+            const showModal = (appId) => {
+                const app = appData.find(a => a.id === appId);
+                if (!app || !modal || !modalContent) return;
+
+                modalContent.innerHTML = `
+                    <button id="modal-close-inner" class="absolute top-4 right-4 text-stone-500 hover:text-stone-800 text-3xl font-bold">&times;</button>
+                    <h3 class="text-3xl font-bold text-emerald-700">${app.name}</h3>
+                    <p class="text-md text-stone-500 mb-6">${app.vendor}</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                             <h4 class="text-lg font-semibold text-green-800 mb-2">Pros</h4>
+                             <ul class="list-disc list-inside space-y-1 text-green-700">
+                                ${app.pros.map(pro => `<li>${pro}</li>`).join('')}
+                             </ul>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                             <h4 class="text-lg font-semibold text-red-800 mb-2">Cons & Considerations</h4>
+                             <ul class="list-disc list-inside space-y-1 text-red-700">
+                                ${app.cons.map(con => `<li>${con}</li>`).join('')}
+                             </ul>
+                        </div>
+                    </div>
+                     <div class="mt-6 text-center">
+                        <p class="text-stone-600">This is a starting point. The best app is one that is trialed and chosen with the help of a qualified Speech-Language Pathologist.</p>
+                     </div>
+                `;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                const modalCloseInner = document.getElementById('modal-close-inner');
+                if (modalCloseInner) {
+                    modalCloseInner.addEventListener('click', hideModal);
+                }
+            };
+
+            const hideModal = () => {
+                if (!modal) return;
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            };
+            
+            if (filters) {
+                filters.addEventListener('change', handleFilterChange);
+            }
+            if (appsGrid) {
+                appsGrid.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'BUTTON' && e.target.dataset.id) {
+                        showModal(e.target.dataset.id);
+                    }
+                });
+            }
+            if (modalClose) {
+                modalClose.addEventListener('click', hideModal);
+            }
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        hideModal();
+                    }
+                });
+            }
+
+            setupNavigation();
+            updateActiveContent('home');
+            renderApps(appData);
+            renderTerminology();
+        });
+    </script>
+</body>
+</html>
