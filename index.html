@@ -16,6 +16,7 @@
         - Report Info: Getting Started process. Goal: Show clear path. Viz: Styled HTML/CSS step-by-step diagram. Justification: Clarifies action sequence. Library/Method: HTML/Tailwind CSS.
         - Report Info: Proloquo vs Proloquo2Go distinction. Goal: Clarify common point of confusion. Viz: Textual explanation in dedicated section. Justification: Directly addresses potential user query. Library/Method: HTML/Tailwind CSS.
         - Report Info: Why Apple? Goal: Explain platform prevalence. Viz: Informational cards. Justification: Answers user question. Library/Method: HTML/Tailwind CSS.
+        - Report Info: Audio Overview of Guide. Goal: Provide auditory access to guide's summary. Viz: HTML5 Audio Player. Interaction: Standard playback controls. Justification: Increases accessibility. Library/Method: HTML <audio> tag.
     -->
     <style>
         body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
@@ -56,6 +57,7 @@
 
         .step-connector { content: ''; position: absolute; left: 50%; top: 2rem; bottom: -2rem; border-left: 2px dashed #9ca3af; transform: translateX(-1px); }
         .step-item:last-child .step-connector { display: none; }
+        audio { width: 100%; max-width: 600px; margin-top: 0.5rem; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body class="bg-stone-50 text-stone-800">
@@ -102,6 +104,11 @@
                 <div class="text-center bg-white p-8 rounded-2xl shadow-lg border border-stone-200">
                     <h1 class="text-4xl md:text-5xl font-bold text-emerald-700">Unlocking Your Child's Voice</h1>
                     <p class="mt-4 max-w-3xl mx-auto text-lg text-stone-600">Welcome. This guide is designed to help you, as a parent of a young autistic child, navigate the world of Augmentative and Alternative Communication (AAC). The goal is to demystify the options and empower you with clear, practical information to support your son's communication journey.</p>
+                    <div class="mt-6">
+                        <a href="#resources" data-target-id="audio-player-container" class="nav-link inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors text-base shadow-md">
+                            <span class="mr-2">🎧</span> Listen to an Audio Overview
+                        </a>
+                    </div>
                 </div>
 
                 <div class="mt-12 grid md:grid-cols-2 gap-8 items-start">
@@ -224,7 +231,7 @@
                 <div class="mt-16">
                      <h3 class="text-2xl font-bold text-stone-800 mb-6 text-center">Your Most Powerful Strategy: Modeling</h3>
                      <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg border border-stone-200">
-                         <p class="text-lg text-stone-600">If you remember one thing, let it be this: **you need to use your son's AAC system when you talk to him.** This is called <strong class="text-emerald-700">modeling</strong> or Aided Language Input.</p>
+                         <p class="text-lg text-stone-600">If you remember one thing, let it be this: <strong>you need to use your son's AAC system when you talk to him.</strong> This is called <strong class="text-emerald-700">modeling</strong> or Aided Language Input.</p>
                          <br>
                          <p class="text-stone-600">Just like children learn to speak by hearing words used around them constantly, your son will learn his AAC system by seeing you use it. When you say, "Do you want to <strong class="text-emerald-700">play</strong>?", you should also press the 'PLAY' button on his device. This shows him how the symbols connect to spoken words and real actions. It's the single most important thing you can do to help him learn and feel motivated to communicate.</p>
                      </div>
@@ -249,12 +256,12 @@
                         <p class="text-emerald-600"><strong>Platform:</strong> iOS (iPad, iPhone, iPod touch).</p>
                         <p class="mt-2 text-emerald-600"><strong>History:</strong> With the rise of the iPhone and iPad, AssistiveWare developed Proloquo2Go ("P2G") specifically for these mobile devices. It quickly became one ofthe most well-known and widely adopted AAC apps.</p>
                         <p class="mt-2 text-emerald-600"><strong>Status:</strong> Proloquo2Go is a current, actively developed, and widely used AAC application. It receives regular updates with new features, vocabulary, and voices.</p>
-                        <p class="mt-2 text-emerald-600"><strong>Relevance Today:</strong> When people discuss "Proloquo" in the context of modern AAC for children, they are almost certainly referring to **Proloquo2Go**. This is the app you would consider for your son on an iPad.</p>
+                        <p class="mt-2 text-emerald-600"><strong>Relevance Today:</strong> When people discuss "Proloquo" in the context of modern AAC for children, they are almost certainly referring to <strong>Proloquo2Go</strong>. This is the app you would consider for your son on an iPad.</p>
                     </div>
                 </div>
                 <div class="mt-8 bg-sky-50 p-6 rounded-2xl shadow-md border border-sky-200">
                     <h3 class="text-xl font-semibold text-sky-700 text-center">In Simple Terms:</h3>
-                    <p class="mt-3 text-sky-600 text-center max-w-2xl mx-auto">Think of **Proloquo** as the older computer program, and **Proloquo2Go (P2G)** as the modern app for iPads and iPhones that your son would use. If an SLP or another parent mentions "Proloquo" today in the context of an AAC app for a child, they almost always mean Proloquo2Go.</p>
+                    <p class="mt-3 text-sky-600 text-center max-w-2xl mx-auto">Think of <strong>Proloquo</strong> as the older computer program, and <strong>Proloquo2Go (P2G)</strong> as the modern app for iPads and iPhones that your son would use. If an SLP or another parent mentions "Proloquo" today in the context of an AAC app for a child, they almost always mean Proloquo2Go.</p>
                 </div>
             </section>
             
@@ -296,6 +303,17 @@
                     <h2 class="text-3xl md:text-4xl font-bold text-emerald-700">Helpful Resources & Next Steps</h2>
                     <p class="mt-3 max-w-3xl mx-auto text-lg text-stone-600">You are not alone on this journey. Many organizations and communities exist to provide support, information, and funding assistance. Here are some key resources to explore.</p>
                 </div>
+
+                <div id="audio-player-container" class="mb-12 bg-white p-6 rounded-2xl shadow-lg border border-stone-200">
+                    <h3 class="text-2xl font-semibold text-stone-800 text-center mb-4">Audio Overview of this Guide</h3>
+                    <p class="text-center text-stone-600 mb-4">Listen to a summary of the key information presented in this interactive guide.</p>
+                    <div class="flex justify-center">
+                        <audio controls src="https://raw.githubusercontent.com/cods4/aac-info/refs/heads/main/gemini_podcast.m4a">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200">
                         <h3 class="text-xl font-semibold text-stone-800">Professional Organizations</h3>
@@ -375,12 +393,25 @@
 
                 const handleNavClick = (e) => {
                     e.preventDefault();
-                    const targetId = e.target.hash.substring(1);
+                    const targetId = e.currentTarget.hash.substring(1);
+                    const specificElementId = e.currentTarget.dataset.targetId;
+                    
                     updateActiveContent(targetId);
+
+                    if (specificElementId) {
+                        setTimeout(() => {
+                            const elementToScrollTo = document.getElementById(specificElementId);
+                            if (elementToScrollTo) {
+                                elementToScrollTo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        }, 100); 
+                    } else {
+                         window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+
                     if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
                         mobileMenu.classList.add('hidden');
                     }
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 };
 
                 allNavLinks.forEach(link => link.addEventListener('click', handleNavClick));
@@ -397,9 +428,10 @@
                     section.classList.toggle('active', section.id === targetId);
                 });
                 
-                document.querySelectorAll('.nav-link').forEach(link => {
-                    link.classList.toggle('active-nav', link.hash === '#' + targetId);
+                document.querySelectorAll('#nav-links .nav-link, #mobile-menu .nav-link').forEach(link => {
+                     link.classList.toggle('active-nav', link.hash === '#' + targetId && !link.dataset.targetId); // Only activate tab if not a specific element link
                 });
+
 
                 if (targetId === 'chooser' && costChartCanvas && !costChartCanvas.chart) {
                     createCostChart();
@@ -576,7 +608,7 @@
             }
 
             setupNavigation();
-            updateActiveContent('home');
+            updateActiveContent('home'); 
             renderApps(appData);
             renderTerminology();
         });
