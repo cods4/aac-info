@@ -355,8 +355,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const appData = [
-                { id: 'p2g', name: 'Proloquo2Go', vendor: 'AssistiveWare', priceCategory: 'One-time', price: 249.99, platforms: ['iOS'], features: ['Customizable'], summary: 'A comprehensive, highly customizable symbol-based app.', pros: ['Extensive vocabulary and high-quality voices.', 'Progressive Language feature grows with the user.', 'Highly customizable grid layouts and buttons.'], cons: ['High one-time cost.', 'Complexity can be overwhelming initially.', 'Ease of moving buttons can disrupt motor planning if not managed carefully.'] },
-                { id: 'lamp', name: 'LAMP Words for Life', vendor: 'PRC-Saltillo', priceCategory: 'One-time', price: 299.99, platforms: ['iOS'], features: ['Motor Planning'], summary: 'Focuses on unique and consistent motor plans for each word.', pros: ['Excellent for users who thrive on routine and predictability.', 'Consistent motor patterns reduce cognitive load.', 'Vocabulary Builder helps manage complexity for beginners.'], cons: ['High one-time cost.', 'Abstract symbols require direct teaching.', 'Steep learning curve for parents and therapists; may require specialized training.'] },
+                { id: 'p2g', name: 'Proloquo2Go', vendor: 'AssistiveWare', priceCategory: 'One-time', price: 249.99, platforms: ['iOS'], features: ['Customizable'], summary: 'A comprehensive, highly customizable symbol-based app.', pros: ['Extensive vocabulary and high-quality voices.', 'Progressive Language feature grows with the user.', 'Highly customizable grid layouts and buttons.'], cons: ['High one-time cost.', 'Complexity can be overwhelming initially.', 'Ease of moving buttons can disrupt motor planning if not managed carefully.'], screenshots: ['images/proloquo2go_1.webp', 'images/proloquo2go_2.webp'] },
+                { id: 'lamp', name: 'LAMP Words for Life', vendor: 'PRC-Saltillo', priceCategory: 'One-time', price: 299.99, platforms: ['iOS'], features: ['Motor Planning'], summary: 'Focuses on unique and consistent motor plans for each word.', pros: ['Excellent for users who thrive on routine and predictability.', 'Consistent motor patterns reduce cognitive load.', 'Vocabulary Builder helps manage complexity for beginners.'], cons: ['High one-time cost.', 'Abstract symbols require direct teaching.', 'Steep learning curve for parents and therapists; may require specialized training.'], screenshots: ['images/lamp_1.jpg', 'images/lamp_2.png'] },
                 { id: 'touchchat', name: 'TouchChat HD w/ WordPower', vendor: 'PRC-Saltillo', priceCategory: 'One-time', price: 299.99, platforms: ['iOS'], features: ['Customizable'], summary: 'Intuitive, word-based vocabularies for sentence building.', pros: ['WordPower vocabularies are well-structured and intuitive for many.', 'Highly customizable.', 'Offers various vocabulary levels for different abilities.'], cons: ['High one-time cost.', 'Vocabulary layout can change when moving between levels, disrupting motor plans.', 'Some reported minor bugs.'] },
                 { id: 'tdsnap', name: 'TD Snap (Core First)', vendor: 'Tobii Dynavox', priceCategory: 'Subscription', price: 9.99, platforms: ['iOS', 'Web'], features: ['Customizable'], summary: 'Systematic, core-word focused app with integrated visual supports.', pros: ['Strong, systematic approach to language learning.', 'Easy-to-use editing tools.', 'Integrated supports like visual schedules are very helpful.'], cons: ['Subscription model can be costly long-term.', 'Some find accessing fringe vocabulary can take many clicks.', 'Updates have reportedly pushed users to the subscription model.'] },
                 { id: 'avaz', name: 'Avaz AAC', vendor: 'Avaz, Inc.', priceCategory: 'One-time', price: 200.00, platforms: ['iOS', 'Android'], features: ['Customizable'], summary: 'Affordable, user-friendly app with graded vocabulary levels.', pros: ['Relatively affordable one-time cost.', 'Simple, color-coded interface is good for beginners.', 'Remote modeling feature for teletherapy.'], cons: ['Motor planning is less of a focus.', 'Customer support is based internationally.'] },
@@ -549,11 +549,27 @@
                 const app = appData.find(a => a.id === appId);
                 if (!app || !modal || !modalContent) return;
 
+                let screenshotsHtml = '';
+                if (app.screenshots && Array.isArray(app.screenshots) && app.screenshots.length > 0) {
+                    screenshotsHtml = `
+                        <div class="my-6">
+                            <h4 class="text-xl font-semibold text-stone-700 mb-3">Screenshots</h4>
+                            <div class="flex flex-wrap gap-4 justify-center">
+                                ${app.screenshots.map(src => `
+                                    <img src="${src}" alt="${app.name} screenshot" class="max-w-xs max-h-48 rounded-md shadow-md border border-stone-200">
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
                 modalContent.innerHTML = `
                     <button id="modal-close-inner" class="absolute top-4 right-4 text-stone-500 hover:text-stone-800 text-3xl font-bold">&times;</button>
                     <h3 class="text-3xl font-bold text-emerald-700">${app.name}</h3>
                     <p class="text-md text-stone-500 mb-6">${app.vendor}</p>
                     
+                    ${screenshotsHtml}
+
                     <div class="grid md:grid-cols-2 gap-6">
                         <div class="bg-green-50 p-4 rounded-lg border border-green-200">
                              <h4 class="text-lg font-semibold text-green-800 mb-2">Pros</h4>
